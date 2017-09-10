@@ -6,6 +6,7 @@
 /logs/*
 /tmp/*
 /vendor/*
+/debug.log
 
 # OS generated files #
 ######################
