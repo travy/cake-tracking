@@ -1,4 +1,6 @@
-# Cake-template plugin for CakePHP
+# Cake Tracking Plugin
+
+[![Build Status](https://travis-ci.org/travy/cake-tracking.svg?branch=develop)](https://travis-ci.org/travy/cake-tracking)
 
 ## Installation
 

@@ -7,12 +7,14 @@ use Cake\TestSuite\TestCase;
 
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
+use Cake\Http\MiddlewareQueue;
 
 class TrackingMiddlewareTest extends TestCase
 {
     protected $middleware;
     protected $request;
     protected $response;
+    protected $middlewareQueue;
     
     /**
      * Creates a new TrackingMiddleware mock object for each test performed.
@@ -25,6 +27,14 @@ class TrackingMiddlewareTest extends TestCase
         $this->middleware = new TrackingMiddleware();
         $this->request = $this->createMock(ServerRequestInterface::class);
         $this->response = $this->createMock(ResponseInterface::class);
+        
+        //  mocks an invokable middleware queue which returns a response
+        $this->middlewareQueue = $this->getMockBuilder(MiddlewareQueue::class)
+                ->setMethods(['__invoke'])
+                ->getMock();
+        $this->middlewareQueue
+                ->method('__invoke')
+                ->willReturn($this->createMock(ResponseInterface::class));
     }
     
     /**
@@ -57,7 +67,7 @@ class TrackingMiddlewareTest extends TestCase
     {
         if (is_callable($this->middleware)) {
             $callable = $this->middleware;
-            $returnObject = $callable($this->request, $this->response, null);
+            $returnObject = $callable($this->request, $this->response, $this->middlewareQueue);
             $validResponse = $returnObject instanceof ResponseInterface; 
         } else {
             $validResponse = false;
