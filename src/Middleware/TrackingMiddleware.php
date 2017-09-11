@@ -1,12 +1,13 @@
 <?php
 namespace CakeTracking\Middleware;
 
-use Cake\Core\Configure;
-
 use CakeTracking\Blacklists\BlacklistFileRepository;
 use CakeTracking\Blacklists\BlacklistRepositoryInterface;
 use CakeTracking\Loggers\TextualLogger;
 use CakeTracking\Loggers\TrackingLoggerInterface;
+
+use Cake\Core\Configure;
+use Cake\Network\Exception\UnauthorizedException;
 
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -55,7 +56,7 @@ class TrackingMiddleware
         $blacklist = $this->getBlacklistRepository();
         if ($blacklist->contains($ipAddress)) {
             $logger->writeMessage(sprintf("Blocked access for %s", $ipAddress));
-            throw new \Exception('access denined');
+            throw new UnauthorizedException('You have been banned from accessing the site');
         }
         
         return $next($request, $response);
