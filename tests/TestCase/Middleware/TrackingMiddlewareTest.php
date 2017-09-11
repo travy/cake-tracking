@@ -1,13 +1,14 @@
 <?php
 namespace CakeTracking\Test\TestCase\Middleware;
 
+use CakeTracking\Loggers\TextualLogger;
 use CakeTracking\Middleware\TrackingMiddleware;
 
+use Cake\Http\MiddlewareQueue;
+use Cake\Http\ServerRequest;
 use Cake\TestSuite\TestCase;
 
 use Psr\Http\Message\ResponseInterface;
-use Psr\Http\Message\ServerRequestInterface;
-use Cake\Http\MiddlewareQueue;
 
 class TrackingMiddlewareTest extends TestCase
 {
@@ -25,7 +26,7 @@ class TrackingMiddlewareTest extends TestCase
         parent::setUp();
         
         $this->middleware = new TrackingMiddleware();
-        $this->request = $this->createMock(ServerRequestInterface::class);
+        $this->request = $this->createMock(ServerRequest::class);
         $this->response = $this->createMock(ResponseInterface::class);
         
         //  mocks an invokable middleware queue which returns a response
@@ -74,5 +75,16 @@ class TrackingMiddlewareTest extends TestCase
         }
         
         $this->assertTrue($validResponse);
+    }
+    
+    /**
+     * Logging should default to the file system.
+     *
+     */
+    public function testLoggingDefaultsToFilesystem()
+    {
+        $logger = $this->middleware->getLoggingOperation();
+        
+        $this->assertInstanceOf(TextualLogger::class, $logger);
     }
 }
