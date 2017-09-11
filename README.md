@@ -46,7 +46,35 @@ class Application extends BaseApplication
 
 Finally, you should be able to add any custom configuration necessary to complete the environment.
 
-###  Configurations
+If you want to use a custom Logger or blacklisting solution (perhaps to store data in a database)
+then you just need to create a class which implements either `TrackingLoggerInterface` or `BlacklistRepositoryInterface`.
+Then before adding the Middleware to the MiddlewareQueue, you can specify your custom classes
+using the built in setter calls.
+
+```php
+class Application extends BaseApplication
+{
+    public function middleware($middlewareQueue)
+    {
+        //  supply the custom classes to the TrackingMiddleware object
+        $trackingMiddleware = new \CakeTracking\Middleware\TrackingMiddleware();
+        $trackingMiddleware->setBlacklistRepository(new BlacklistDatabaseRepository($configs));
+        $trackingMiddleware->setLoggingOperation(new TrackingDatabaseLoggin($configs));
+    
+        $middlewareQueue
+            ->add(ErrorHandlerMiddleware::class)
+            ->add(AssetMiddleware::class)
+            ->add(new RoutingMiddleware($this))
+                
+            //  supply the instantiated tracker to the queue
+            ->add($trackingMiddleware);
+
+        return $middlewareQueue;
+    }
+}
+```
+
+##  Configurations
 
 The following configurations are optional but will be useful for system setup.
 
