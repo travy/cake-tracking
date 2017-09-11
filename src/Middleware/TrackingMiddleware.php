@@ -43,6 +43,8 @@ class TrackingMiddleware
         
         $logger = $this->getLoggingOperation();
         $logger->logRequest($request);
+    
+        
         
         return $next($request, $response);
     }
