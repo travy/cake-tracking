@@ -1,6 +1,10 @@
 <?php
 namespace CakeTracking\Middleware;
 
+use Cake\Core\Configure;
+
+use CakeTracking\Blacklists\BlacklistFileRepository;
+use CakeTracking\Blacklists\BlacklistRepositoryInterface;
 use CakeTracking\Loggers\TextualLogger;
 use CakeTracking\Loggers\TrackingLoggerInterface;
 
@@ -23,6 +27,7 @@ use Psr\Http\Message\ServerRequestInterface;
 class TrackingMiddleware
 {
     protected $loggingOperation;
+    protected $blacklistRepository;
     
     /**
      * Logs all requests made to the application along with the Controller and
@@ -41,10 +46,17 @@ class TrackingMiddleware
     {
         $request = $request ?: ServerRequestFactory::fromGlobals();
         
+        //  logs all requests which occur on the site and which features they are requesting
         $logger = $this->getLoggingOperation();
         $logger->logRequest($request);
     
-        
+        //  blocks any ip addresses that have been logged in the blacklist
+        $ipAddress = $request->clientIp();
+        $blacklist = $this->getBlacklistRepository();
+        if ($blacklist->contains($ipAddress)) {
+            $logger->writeMessage(sprintf("Blocked access for %s", $ipAddress));
+            throw new \Exception('access denined');
+        }
         
         return $next($request, $response);
     }
@@ -73,5 +85,30 @@ class TrackingMiddleware
         }
         
         return $this->loggingOperation;
+    }
+    
+    /**
+     * Specifies a repository to use for the blacklist.
+     *
+     * @param BlacklistRepositoryInterface $repository
+     */
+    public function setBlacklistRepository(BlacklistRepositoryInterface $repository)
+    {
+        $this->blacklistRepository = $repository;
+    }
+    
+    /**
+     * Acquires the blacklist repository.
+     *
+     * @return BlacklistRepositoryInterface
+     */
+    public function getBlacklistRepository()
+    {
+        if (is_null($this->blacklistRepository)) {
+            $filename = Configure::read('CakeTracking.Blacklist', LOGS . 'blacklist.txt');
+            $this->setBlacklistRepository(new BlacklistFileRepository($filename));
+        }
+        
+        return $this->blacklistRepository;
     }
 }

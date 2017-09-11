@@ -52,7 +52,7 @@ class TextualLogger implements TrackingLoggerInterface
         
         //  open a file resource for the message, the name of the file will
         //  either be read from the config or the default will be used
-        $textFilename = Configure::read('CakeTracking.LogFile', 'cake-tracking.txt');
+        $textFilename = Configure::read('CakeTracking.LogFile', LOGS .'cake-tracking.txt');
         $fileResource = fopen($textFilename, 'a+');
         if ($fileResource === false) {
             throw new CakeTrackerLoggingException('cannot open file for writting');

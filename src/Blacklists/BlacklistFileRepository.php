@@ -39,7 +39,7 @@ class BlacklistFileRepository implements BlacklistRepositoryInterface
         $blacklist = $this->readIntoArray();
         $position = $this->binarySearch($ip, $blacklist);
         
-        return $position > 0;
+        return $position > -1;
     }
     
     /**

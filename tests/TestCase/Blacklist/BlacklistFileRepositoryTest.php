@@ -31,7 +31,7 @@ class BlacklistFileRepositoryTest extends TestCase
      */
     public function binarySearchDataProvider()
     {
-        $dataArray = ['a', 'b', 'c', 'd', 'E', 'f'];
+        $dataArray = ['a', 'b', 'c', 'd', 'e', 'f',];
         
         return [
             //  checks for last element in array
