@@ -14,7 +14,7 @@ In addition, external IP addresses can be blacklisted from the site by adding th
 Add the package to your CakePHP projects `composer.json`
 
 ```shell
-composer require travy/cake-tracking:1.0
+composer require travy/cake-tracking:1.0.0
 ```
 
 Next, be sure to add the plugin to the `config/bootstrap.php` file by executing the following command in the command prompt
